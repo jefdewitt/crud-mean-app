@@ -1,10 +1,13 @@
 console.log('May Node be with you.');
 
+const cors = require('cors');
 const express = require('express');
 // body-parser extracts data from form & adds it to the body property of the req object
 const bodyParser= require('body-parser')
 const cookieParser= require('cookie-parser')
 const app = express();
+
+app.use(cors());
 
 // Mongo DB configs
 const MongoClient = require('mongodb').MongoClient
@@ -21,7 +24,8 @@ MongoClient.connect(MongoCreds, { useNewUrlParser: true }, (err, client) => {
     });
 })
 
-app.use(bodyParser.urlencoded({extended: false}));
+// app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.set('view engine', 'pug');
@@ -34,7 +38,10 @@ app.get('/', function(req, res) {
         console.log('test', test)
         names = results;
         // send HTML file populated with names here
-        res.render('index', {'names': names});
+        // res.render('index', {'names': names});
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ mongoData: names }));
     })
 })
 
